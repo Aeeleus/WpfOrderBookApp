@@ -92,10 +92,22 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Converters\UnixTimestampConverter.cs" />
+    <Compile Include="HistoryWindow.xaml.cs">
+      <DependentUpon>HistoryWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="OrderBookDetailsWindow.xaml.cs">
+      <DependentUpon>OrderBookDetailsWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Services\BinanceService.cs" />
     <Compile Include="Services\BybitService.cs" />
+    <Compile Include="Utils\BinaryReaderHelper.cs" />
     <Compile Include="Utils\BinaryWriterHelper.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
+    <Page Include="HistoryWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -108,6 +120,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="OrderBookDetailsWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Models\OrderBook.cs" />

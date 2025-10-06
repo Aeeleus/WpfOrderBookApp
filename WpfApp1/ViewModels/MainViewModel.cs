@@ -43,7 +43,6 @@ namespace WpfOrderBookApp.ViewModels
 
         public async System.Threading.Tasks.Task StartAsync()
         {
-
             _ = System.Threading.Tasks.Task.Run(async () =>
             {
                 try
@@ -73,6 +72,7 @@ namespace WpfOrderBookApp.ViewModels
         {
             _latestBinanceOrderBook = orderBook;
             Console.WriteLine($"Received Binance order book: {orderBook.Bids.Count} bids, {orderBook.Asks.Count} asks");
+            BinaryWriterHelper.WriteOrderBook("orderbook.bin", orderBook, 1); // Binance (ExchangeId=1)
             AggregateAndSave();
         }
 
@@ -80,6 +80,7 @@ namespace WpfOrderBookApp.ViewModels
         {
             _latestBybitOrderBook = orderBook;
             Console.WriteLine($"Received Bybit order book: {orderBook.Bids.Count} bids, {orderBook.Asks.Count} asks");
+            BinaryWriterHelper.WriteOrderBook("orderbook.bin", orderBook, 0); // Bybit (ExchangeId=0)
             AggregateAndSave();
         }
 
@@ -125,7 +126,7 @@ namespace WpfOrderBookApp.ViewModels
             }
 
             _latestBids = aggregatedBids.Select(kv => new OrderBookLevel { Price = kv.Key, Quantity = kv.Value })
-                .OrderByDescending(b => b.Price).Take(10).ToList(); 
+                .OrderByDescending(b => b.Price).Take(10).ToList();
             _latestAsks = aggregatedAsks.Select(kv => new OrderBookLevel { Price = kv.Key, Quantity = kv.Value })
                 .OrderBy(a => a.Price).Take(10).ToList();
 
@@ -138,11 +139,8 @@ namespace WpfOrderBookApp.ViewModels
                 Asks = _latestAsks
             };
 
-            BinaryWriterHelper.WriteOrderBook("orderbook.bin", aggregatedOrderBook);
-        }
+            BinaryWriterHelper.WriteOrderBook("orderbook.bin", aggregatedOrderBook, 255); 
 
-        private void UpdateUi(object sender, ElapsedEventArgs e)
-        {
             App.Current.Dispatcher.Invoke(() =>
             {
                 BidsCollection.Clear();
@@ -153,6 +151,11 @@ namespace WpfOrderBookApp.ViewModels
                 foreach (var ask in _latestAsks)
                     AsksCollection.Add(ask);
             });
+        }
+
+        private void UpdateUi(object sender, ElapsedEventArgs e)
+        {
+            
         }
     }
 }

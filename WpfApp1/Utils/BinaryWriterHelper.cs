@@ -5,25 +5,31 @@ namespace WpfOrderBookApp.Utils
 {
     public static class BinaryWriterHelper
     {
-        public static void WriteOrderBook(string filePath, OrderBook orderBook)
+        private static readonly object _fileLock = new object();
+
+        public static void WriteOrderBook(string filePath, OrderBook orderBook, byte exchangeId = 255)
         {
-            using (var stream = new FileStream(filePath, FileMode.Append, FileAccess.Write))
-            using (var writer = new BinaryWriter(stream))
+            lock (_fileLock)
             {
-                writer.Write(orderBook.Timestamp);
-
-                writer.Write(orderBook.Bids.Count);
-                foreach (var bid in orderBook.Bids)
+                using (var stream = new FileStream(filePath, FileMode.Append, FileAccess.Write, FileShare.Read))
+                using (var writer = new BinaryWriter(stream))
                 {
-                    writer.Write(bid.Price);
-                    writer.Write(bid.Quantity);
-                }
+                    writer.Write(orderBook.Timestamp);
+                    writer.Write(exchangeId); 
 
-                writer.Write(orderBook.Asks.Count);
-                foreach (var ask in orderBook.Asks)
-                {
-                    writer.Write(ask.Price);
-                    writer.Write(ask.Quantity);
+                    writer.Write(orderBook.Bids.Count);
+                    foreach (var bid in orderBook.Bids)
+                    {
+                        writer.Write((double)bid.Price);
+                        writer.Write((double)bid.Quantity);
+                    }
+
+                    writer.Write(orderBook.Asks.Count);
+                    foreach (var ask in orderBook.Asks)
+                    {
+                        writer.Write((double)ask.Price);
+                        writer.Write((double)ask.Quantity);
+                    }
                 }
             }
         }
